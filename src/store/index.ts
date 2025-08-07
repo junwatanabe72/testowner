@@ -1,38 +1,45 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import authSlice from './slices/authSlice';
-import applicationsSlice from './slices/applicationsSlice';
-import notificationsSlice from './slices/notificationsSlice';
-import uiSlice from './slices/uiSlice';
+import buildingReducer from './slices/buildingSlice';
+import applicationsReducer from './slices/applicationsSlice';
+import viewingsReducer from './slices/viewingsSlice';
+import activitiesReducer from './slices/activitiesSlice';
+import uiReducer from './slices/uiSlice';
+import userReducer from './slices/userSlice';
+import loadingReducer from './slices/loadingSlice';
+import errorReducer from './slices/errorSlice';
+import viewingReservationsReducer from './slices/viewingReservationsSlice';
+import tenantApplicationsReducer from './slices/tenantApplicationsSlice';
+import recruitmentReducer from './slices/recruitmentSlice';
+import { localStorageMiddleware, loadPersistedState } from './middleware';
+import { generateInitialData } from '../utils/dataGenerator';
 
-// ミドルウェア
-import { sessionTimeoutMiddleware, localStorageMiddleware, errorHandlingMiddleware } from './middleware';
+const rootReducer = {
+  building: buildingReducer,
+  applications: applicationsReducer,
+  viewings: viewingsReducer,
+  activities: activitiesReducer,
+  ui: uiReducer,
+  user: userReducer,
+  loading: loadingReducer,
+  error: errorReducer,
+  viewingReservations: viewingReservationsReducer,
+  tenantApplications: tenantApplicationsReducer,
+  recruitment: recruitmentReducer,
+};
 
-const configuredStore: any = configureStore({
-  reducer: {
-    auth: authSlice,
-    applications: applicationsSlice,
-    notifications: notificationsSlice,
-    ui: uiSlice,
-  },
-  middleware: (getDefaultMiddleware) =>
+const persistedState = loadPersistedState();
+const initialData = persistedState || generateInitialData();
+
+export const store = configureStore({
+  reducer: rootReducer,
+  preloadedState: initialData as any,
+  middleware: (getDefaultMiddleware: any) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: ['ui.modals'],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat([
-      sessionTimeoutMiddleware,
-      localStorageMiddleware,
-      errorHandlingMiddleware,
-    ]),
-  devTools: process.env.NODE_ENV !== 'production',
-});
+    }).concat(localStorageMiddleware as any) as any,
+} as any);
 
-export const store = configuredStore;
-
-export type RootState = ReturnType<typeof configuredStore.getState>;
-export type AppDispatch = typeof configuredStore.dispatch;
-
-// 型付きhooks
-export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

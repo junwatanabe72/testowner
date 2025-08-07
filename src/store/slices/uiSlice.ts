@@ -1,107 +1,51 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Toast {
+interface Notification {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  title: string;
   message: string;
-  duration?: number;
-}
-
-interface ModalState {
-  isOpen: boolean;
-  data?: any;
-}
-
-interface Breadcrumb {
-  label: string;
-  path?: string;
+  type: 'success' | 'error' | 'info' | 'warning';
 }
 
 interface UIState {
-  theme: 'light' | 'dark';
-  sidebarCollapsed: boolean;
-  loading: Record<string, boolean>;
-  modals: Record<string, ModalState>;
-  toasts: Toast[];
-  currentPage: string;
-  breadcrumbs: Breadcrumb[];
-  isMobile: boolean;
+  notification: Notification | null;
+  loading: boolean;
+  activeModal: string | null;
 }
 
 const initialState: UIState = {
-  theme: 'light',
-  sidebarCollapsed: false,
-  loading: {},
-  modals: {},
-  toasts: [],
-  currentPage: '',
-  breadcrumbs: [],
-  isMobile: window.innerWidth < 768,
+  notification: null,
+  loading: false,
+  activeModal: null,
 };
-
-const generateId = () => `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
-      state.theme = action.payload;
-    },
-    toggleSidebar: (state) => {
-      state.sidebarCollapsed = !state.sidebarCollapsed;
-    },
-    setSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.sidebarCollapsed = action.payload;
-    },
-    setLoading: (state, action: PayloadAction<{key: string; isLoading: boolean}>) => {
-      state.loading[action.payload.key] = action.payload.isLoading;
-    },
-    openModal: (state, action: PayloadAction<{modalId: string; data?: any}>) => {
-      state.modals[action.payload.modalId] = {
-        isOpen: true,
-        data: action.payload.data,
-      };
-    },
-    closeModal: (state, action: PayloadAction<string>) => {
-      state.modals[action.payload] = { isOpen: false };
-    },
-    addToast: (state, action: PayloadAction<Omit<Toast, 'id'>>) => {
-      const toast: Toast = {
+    showNotification: (state, action: PayloadAction<Omit<Notification, 'id'>>) => {
+      state.notification = {
+        id: Date.now().toString(),
         ...action.payload,
-        id: generateId(),
-        duration: action.payload.duration || 5000,
       };
-      state.toasts.push(toast);
     },
-    removeToast: (state, action: PayloadAction<string>) => {
-      state.toasts = state.toasts.filter(toast => toast.id !== action.payload);
+    
+    hideNotification: (state) => {
+      state.notification = null;
     },
-    setBreadcrumbs: (state, action: PayloadAction<Breadcrumb[]>) => {
-      state.breadcrumbs = action.payload;
+    
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
     },
-    setCurrentPage: (state, action: PayloadAction<string>) => {
-      state.currentPage = action.payload;
+    
+    openModal: (state, action: PayloadAction<string>) => {
+      state.activeModal = action.payload;
     },
-    setIsMobile: (state, action: PayloadAction<boolean>) => {
-      state.isMobile = action.payload;
+    
+    closeModal: (state) => {
+      state.activeModal = null;
     },
   },
 });
 
-export const {
-  setTheme,
-  toggleSidebar,
-  setSidebarCollapsed,
-  setLoading,
-  openModal,
-  closeModal,
-  addToast,
-  removeToast,
-  setBreadcrumbs,
-  setCurrentPage,
-  setIsMobile,
-} = uiSlice.actions;
-
+export const { showNotification, hideNotification, setLoading, openModal, closeModal } = uiSlice.actions;
 export default uiSlice.reducer;

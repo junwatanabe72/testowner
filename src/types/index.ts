@@ -1,197 +1,184 @@
-// 基本データ型定義
-export interface User {
-  id: string;
-  email: string;
-  role: 'owner' | 'tenant' | 'manager' | 'broker' | 'facility_user';
-  profile: UserProfile;
-  permissions: string[];
-  created_at: string;
-  updated_at: string;
-  last_login: string;
-}
-
-export interface UserProfile {
-  name: string;
-  company_name?: string;
-  phone?: string;
-  avatar_url?: string;
-  department?: string;
-  position?: string;
-}
-
+// 物件情報
 export interface Building {
   id: string;
-  name: string;
-  address: Address;
-  description: string;
-  total_floors: number;
-  construction_year: number;
-  structure_type: string;
-  elevator_count: number;
-  parking_spaces: number;
-  amenities: string[];
-  owner_id: string;
-  management_company_id: string;
-  created_at: string;
-  updated_at: string;
+  info: BuildingInfo;
+  floors: Floor[];
 }
 
-export interface Address {
-  postal_code: string;
-  prefecture: string;
-  city: string;
-  street: string;
-  building_number?: string;
+export interface BuildingInfo {
+  name: string;
+  address: string;
+  access: string[];
+  builtYear: number;
+  builtMonth: number;
+  structure: string;
+  totalFloors: number;
+  floorArea: number;
+  elevator: number;
+  parking: string;
+  facilities: string[];
+  nearbyInfo: { [key: string]: string };
 }
 
 export interface Floor {
   id: string;
-  building_id: string;
-  floor_number: number;
-  area_sqm: number;
-  layout_type: string;
-  rent_amount: number;
-  common_area_fee: number;
-  deposit_months: number;
-  key_money_months: number;
-  status: 'vacant' | 'occupied' | 'under_negotiation';
-  tenant_id?: string;
-  features: string[];
-  floor_plan_url?: string;
-  created_at: string;
-  updated_at: string;
+  buildingId: string;
+  floorNumber: number;
+  area: number;
+  status: 'occupied' | 'vacant';
+  tenantId?: string;
+  tenantName?: string;
+  rent?: number;
+  commonCharge?: number;
+  deposit?: string;
+  keyMoney?: string;
+  floorPlanUrl?: string;
+  contractStartDate?: string;
+  contractEndDate?: string;
 }
 
-export interface Tenant {
+export interface TenantContract {
   id: string;
-  company_name: string;
-  business_type: string;
-  representative_name: string;
-  contact: ContactInfo;
-  employee_count: number;
-  capital_amount: number;
-  floor_id: string;
-  contract: ContractInfo;
-  status: 'active' | 'terminated' | 'pending';
-  created_at: string;
-  updated_at: string;
+  tenantName: string;
+  floorNumber: number;
+  rent: number;
+  commonCharge: number;
+  contractStartDate: string;
+  contractEndDate: string;
+  deposit: string;
+  keyMoney: string;
+  guarantor: string;
+  emergencyContact: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  paymentStatus: 'paid' | 'pending' | 'overdue';
+  lastPaymentDate: string;
+  nextPaymentDue: string;
+  renewalStatus: 'on_time' | 'needs_renewal' | 'auto_renewal' | 'expired';
+  documents: TenantDocument[];
 }
 
-export interface ContactInfo {
-  email: string;
-  phone: string;
-  emergency_contact: string;
+export interface TenantDocument {
+  id: string;
+  type: 'contract' | 'application' | 'guarantor' | 'insurance' | 'other';
+  name: string;
+  uploadDate: string;
+  fileSize?: string;
 }
 
-export interface ContractInfo {
-  start_date: string;
-  end_date: string;
-  rent_amount: number;
-  deposit_amount: number;
-  contract_type: 'fixed' | 'renewable';
-  renewal_date?: string;
-}
-
+// 申請情報
 export interface Application {
   id: string;
-  type: ApplicationType;
   title: string;
+  type: 'facility' | 'cleaning' | 'maintenance' | 'construction';
+  applicant: string;
+  applicantType: 'tenant' | 'management';
+  applicationDate: string;
+  status: 'pending' | 'approved' | 'rejected';
+  details?: string;
+}
+
+// 内見予約情報
+export interface ViewingReservation {
+  id: string;
+  floorNumber: number;
+  reservationDate: string;
+  timeSlot: string;
+  status: 'pending' | 'approved' | 'completed' | 'cancelled';
+  brokerCompany: string;
+  clientName?: string;
+  notes?: string;
+}
+
+// 入居申込情報
+export interface TenantApplication {
+  id: string;
+  floorNumber: number;
+  applicantName: string;
+  applicantPhone: string;
+  applicantEmail: string;
+  companyName: string;
+  employeeCount: number;
+  businessType: string;
+  desiredMoveInDate: string;
+  applicationDate: string;
+  status: 'pending' | 'approved' | 'rejected';
+  brokerCompany: string;
+  brokerName: string;
+  brokerPhone: string;
+  guarantor: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
+  documents: ApplicationDocument[];
+  notes?: string;
+  rejectionReason?: string;
+}
+
+export interface ApplicationDocument {
+  id: string;
+  type: 'application_form' | 'company_registration' | 'financial_statement' | 'guarantor_form' | 'other';
+  name: string;
+  uploadDate: string;
+  fileSize?: string;
+}
+
+// 活動履歴
+export interface ActivityLog {
+  id: string;
+  date: string;
+  type: 'tenant_move_in' | 'tenant_move_out' | 'maintenance' | 'application' | 'viewing';
   description: string;
-  applicant_id: string;
-  applicant_type: 'tenant' | 'manager' | 'broker';
-  target_floor_id?: string;
-  status: ApplicationStatus;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  scheduled_date?: string;
-  estimated_cost?: number;
-  attachments: FileAttachment[];
-  metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-  submitted_at?: string;
+  relatedId?: string;
 }
 
-export type ApplicationType = 
-  | 'construction'
-  | 'facility_reservation'
-  | 'maintenance'
-  | 'repair'
-  | 'cleaning'
-  | 'inspection'
-  | 'viewing_reservation';
-
-export type ApplicationStatus = 
-  | 'draft'
-  | 'submitted'
-  | 'under_review'
-  | 'approved'
-  | 'rejected'
-  | 'completed';
-
-export interface FileAttachment {
+// 募集条件情報
+export interface RecruitmentCondition {
   id: string;
-  filename: string;
-  file_type: string;
-  file_size: number;
-  url: string;
-  uploaded_at: string;
+  floorNumber: number;
+  rent: number;
+  commonCharge: number;
+  deposit: string;
+  keyMoney: string;
+  contractPeriod: string;
+  moveInDate: string;
+  features: string[];
+  description: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Notification {
+// 仲介会社情報
+export interface BrokerCompany {
   id: string;
-  recipient_id: string;
-  title: string;
-  message: string;
-  type: NotificationType;
-  priority: 'low' | 'medium' | 'high';
-  read_status: boolean;
-  action_url?: string;
-  related_entity_type?: string;
-  related_entity_id?: string;
-  metadata: Record<string, any>;
-  created_at: string;
-  read_at?: string;
-  expires_at?: string;
-}
-
-export type NotificationType = 
-  | 'application_submitted'
-  | 'approval_required'
-  | 'application_approved'
-  | 'application_rejected'
-  | 'schedule_reminder'
-  | 'system_maintenance'
-  | 'emergency'
-  | 'information';
-
-// UI関連の型定義
-export interface LoginCredentials {
+  name: string;
+  contactPerson: string;
   email: string;
-  password: string;
+  phone: string;
+  address: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
-export interface DashboardStats {
-  occupancy_rate: number;
-  monthly_revenue: number;
-  monthly_expenses: number;
-  pending_applications: number;
+// メールテンプレート情報
+export interface EmailTemplate {
+  id: string;
+  type: 'vacancy_notification' | 'move_out_notification';
+  subject: string;
+  body: string;
+  variables: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface ApplicationFilters {
-  status?: ApplicationStatus[];
-  type?: ApplicationType[];
-  priority?: ('low' | 'medium' | 'high' | 'urgent')[];
-  applicant?: string;
-  dateRange?: { start: string; end: string };
-}
-
-export interface SortConfig {
-  field: string;
-  direction: 'asc' | 'desc';
-}
-
-export interface PaginationState {
-  page: number;
-  size: number;
-  total: number;
+// ユーザー情報
+export interface User {
+  id: string;
+  name: string;
+  role: 'owner' | 'broker';
+  company?: string;
 }

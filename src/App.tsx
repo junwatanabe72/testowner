@@ -1,137 +1,87 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { Provider } from 'react-redux';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { store } from './store';
-import { useAppSelector, useAppDispatch } from './store';
-import { selectIsAuthenticated, selectUIState } from './store/selectors';
-import { setIsMobile } from './store/slices/uiSlice';
+import AppLayout from './components/Layout/AppLayout';
+import RoleSelection from './pages/RoleSelection';
+import OwnerDashboard from './features/owner/pages/OwnerDashboard';
+import ApprovalManagement from './features/owner/pages/ApprovalManagement';
+import VacancyManagement from './features/owner/pages/VacancyManagement';
+import TenantManagement from './features/owner/pages/TenantManagement';
+import FacilityManagement from './features/owner/pages/FacilityManagement';
+import MaintenanceManagement from './features/owner/pages/MaintenanceManagement';
+import ConstructionManagement from './features/owner/pages/ConstructionManagement';
+import EmergencyManagement from './features/owner/pages/EmergencyManagement';
+import BrokerPortal from './features/broker/pages/BrokerPortal';
+import ViewingReservation from './features/broker/pages/ViewingReservation';
+import Notification from './components/Common/Notification';
+import ErrorBoundary from './components/Common/ErrorBoundary';
+import DataManagement from './components/Common/DataManagement';
+import ApplicationManagement from './features/owner/pages/ApplicationManagement';
+import EnhancedTenantManagement from './features/owner/pages/EnhancedTenantManagement';
 
-// コンポーネント
-import SimpleLoginPage from './pages/SimpleLoginPage';
-import DashboardLayout from './components/layout/DashboardLayout';
-import SimpleOwnerDashboard from './pages/SimpleOwnerDashboard';
-import SimpleTenantPortal from './pages/SimpleTenantPortal';
-import ToastProvider from './components/common/ToastProvider';
-
-// スマホ対応のテーマ設定
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#007bff',
+      main: '#1976d2',
     },
     secondary: {
-      main: '#6c757d',
-    },
-    success: {
-      main: '#28a745',
-    },
-    warning: {
-      main: '#ffc107',
-    },
-    error: {
-      main: '#dc3545',
+      main: '#dc004e',
     },
   },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          minHeight: '44px', // タッチしやすいサイズ
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiInputBase-root': {
-            minHeight: '44px', // タッチしやすいサイズ
-          },
-        },
-      },
-    },
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 900,
-      lg: 1200,
-      xl: 1536,
-    },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
 });
 
-function AppContent() {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const { isMobile } = useAppSelector(selectUIState);
-  const dispatch = useAppDispatch();
-
-  // レスポンシブ対応
-  useEffect(() => {
-    const checkIsMobile = () => {
-      const mobile = window.innerWidth < 768;
-      if (mobile !== isMobile) {
-        dispatch(setIsMobile(mobile));
-      }
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, [isMobile, dispatch]);
-
-  // 認証状態の復元
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const userStr = localStorage.getItem('currentUser');
-    
-    if (token && userStr) {
-      try {
-        // TODO: 実際のアプリでは、トークンの有効性を確認し、セッションを復元
-        console.log('Session restoration would happen here');
-      } catch (error) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('currentUser');
-      }
-    }
-  }, []);
-
-  if (!isAuthenticated) {
-    return (
-      <Routes>
-        <Route path="/login" element={<SimpleLoginPage />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
-
-  return (
-    <DashboardLayout>
-      <Routes>
-        <Route path="/owner/*" element={<SimpleOwnerDashboard />} />
-        <Route path="/broker/*" element={<div>仲介会社ダッシュボード（開発中）</div>} />
-        <Route path="/" element={<Navigate to="/owner" replace />} />
-        <Route path="*" element={<Navigate to="/owner" replace />} />
-      </Routes>
-    </DashboardLayout>
-  );
-}
-
-function App() {
+const App: React.FC = () => {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          <AppContent />
-          <ToastProvider />
-        </Router>
+        <ErrorBoundary>
+          <Notification />
+          <Routes>
+          <Route path="/" element={<RoleSelection />} />
+          
+          <Route path="/owner" element={<AppLayout />}>
+            <Route path="dashboard" element={<OwnerDashboard />} />
+            <Route path="vacancy" element={<VacancyManagement />} />
+            <Route path="tenant" element={<EnhancedTenantManagement />} />
+            <Route path="applications" element={<ApplicationManagement />} />
+            <Route path="facility" element={<FacilityManagement />} />
+            <Route path="maintenance" element={<MaintenanceManagement />} />
+            <Route path="construction" element={<ConstructionManagement />} />
+            <Route path="approval" element={<ApprovalManagement />} />
+            <Route path="emergency" element={<EmergencyManagement />} />
+            <Route path="data" element={<DataManagement />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
+          </Route>
+          
+          <Route path="/broker" element={<AppLayout />}>
+            <Route path="portal" element={<BrokerPortal />} />
+            <Route path="viewing" element={<ViewingReservation />} />
+            <Route index element={<Navigate to="portal" replace />} />
+          </Route>
+          
+          <Route path="/logout" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </ThemeProvider>
     </Provider>
   );
-}
+};
 
 export default App;
