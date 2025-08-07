@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/testowner/static/css/main.4cf9056f.css",
+    "main.js": "/testowner/static/js/main.d8674f6e.js",
+    "index.html": "/testowner/index.html",
+    "main.4cf9056f.css.map": "/testowner/static/css/main.4cf9056f.css.map",
+    "main.d8674f6e.js.map": "/testowner/static/js/main.d8674f6e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4cf9056f.css",
+    "static/js/main.d8674f6e.js"
+  ]
+}
