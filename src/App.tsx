@@ -20,6 +20,7 @@ import ErrorBoundary from './components/Common/ErrorBoundary';
 import DataManagement from './components/Common/DataManagement';
 import ApplicationManagement from './features/owner/pages/ApplicationManagement';
 import EnhancedTenantManagement from './features/owner/pages/EnhancedTenantManagement';
+import CalendarPage from './features/owner/pages/CalendarPage';
 
 const theme = createTheme({
   palette: {
@@ -58,6 +59,7 @@ const App: React.FC = () => {
           
           <Route path="/owner" element={<AppLayout />}>
             <Route path="dashboard" element={<OwnerDashboard />} />
+            <Route path="calendar" element={<CalendarPage />} />
             <Route path="vacancy" element={<VacancyManagement />} />
             <Route path="tenant" element={<EnhancedTenantManagement />} />
             <Route path="applications" element={<ApplicationManagement />} />

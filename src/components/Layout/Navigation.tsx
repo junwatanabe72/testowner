@@ -12,6 +12,7 @@ interface NavItem {
 
 const ownerNavItems: NavItem[] = [
   { label: 'ダッシュボード', path: '/owner/dashboard', group: 'main' },
+  { label: 'カレンダー', path: '/owner/calendar', group: 'main' },
   { label: '空室管理', path: '/owner/vacancy', group: 'management' },
   { label: 'テナント管理', path: '/owner/tenant', group: 'management' },
   { label: '会議室', path: '/owner/facility', group: 'facility' },

@@ -182,3 +182,28 @@ export interface User {
   role: 'owner' | 'broker';
   company?: string;
 }
+
+// カレンダーイベント
+export interface CalendarEvent {
+  id: string;
+  type: 'viewing' | 'application' | 'maintenance' | 'tenant' | 'facility';
+  title: string;
+  description?: string;
+  startDate: string; // ISO 8601
+  endDate?: string; // ISO 8601
+  startTime?: string; // HH:mm
+  endTime?: string; // HH:mm
+  location?: string; // 階数や場所
+  participants?: string[]; // 関係者
+  status?: string;
+  color: string;
+  metadata?: {
+    floorNumber?: number;
+    brokerCompany?: string;
+    tenantName?: string;
+    contractorName?: string;
+    [key: string]: any;
+  };
+}
+
+export type CalendarView = 'month' | 'week' | 'day';
