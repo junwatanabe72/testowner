@@ -1,12 +1,11 @@
 import React from 'react';
 import { Snackbar, Alert } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { hideNotification } from '../../store/slices/uiSlice';
 
 const Notification: React.FC = () => {
-  const dispatch = useDispatch();
-  const notification = useSelector((state: RootState) => state.ui.notification);
+  const dispatch = useAppDispatch();
+  const notification = useAppSelector((state) => state.ui.notification);
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {

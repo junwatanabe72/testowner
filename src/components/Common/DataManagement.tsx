@@ -12,8 +12,7 @@ import {
   Divider,
   Chip,
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
+import { useAppDispatch } from '../../store/hooks';
 import { showNotification } from '../../store/slices/uiSlice';
 import { clearAllLoading } from '../../store/slices/loadingSlice';
 import { clearErrors } from '../../store/slices/errorSlice';
@@ -22,16 +21,17 @@ import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import StorageIcon from '@mui/icons-material/Storage';
+import { STORAGE_KEY } from '../../constants/storage';
 
 const DataManagement: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   const handleResetData = () => {
     try {
       // LocalStorageをクリア
-      localStorage.removeItem('building-saas-data');
+      localStorage.removeItem(STORAGE_KEY);
       
       // Redux stateをクリア
       dispatch(clearAllLoading());
@@ -56,7 +56,7 @@ const DataManagement: React.FC = () => {
 
   const handleExportData = () => {
     try {
-      const data = localStorage.getItem('building-saas-data');
+      const data = localStorage.getItem(STORAGE_KEY);
       if (!data) {
         dispatch(showNotification({
           message: 'エクスポートするデータがありません。',
@@ -100,7 +100,7 @@ const DataManagement: React.FC = () => {
           try {
             const data = e.target?.result as string;
             JSON.parse(data); // バリデーション
-            localStorage.setItem('building-saas-data', data);
+            localStorage.setItem(STORAGE_KEY, data);
             
             dispatch(showNotification({
               message: 'データをインポートしました。ページを再読み込みします。',
@@ -125,7 +125,7 @@ const DataManagement: React.FC = () => {
 
   const getStorageInfo = () => {
     try {
-      const data = localStorage.getItem('building-saas-data');
+      const data = localStorage.getItem(STORAGE_KEY);
       if (!data) return null;
       
       const sizeInBytes = new Blob([data]).size;

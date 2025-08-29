@@ -19,8 +19,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../../store';
+import { useAppSelector, useAppDispatch } from '../../../store/hooks';
 import { updateEmailTemplate } from '../../../store/slices/recruitmentSlice';
 import { showNotification } from '../../../store/slices/uiSlice';
 import { addActivity } from '../../../store/slices/activitiesSlice';
@@ -30,9 +29,9 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import EmailIcon from '@mui/icons-material/Email';
 
 const EmailTemplateEditor: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const emailTemplates = useSelector((state: RootState) => state.recruitment.emailTemplates);
-  const building = useSelector((state: RootState) => state.building);
+  const dispatch = useAppDispatch();
+  const emailTemplates = useAppSelector((state) => state.recruitment.emailTemplates);
+  const building = useAppSelector((state) => state.building.data);
   
   const [currentTab, setCurrentTab] = useState(0);
   const [previewMode, setPreviewMode] = useState(false);
@@ -110,7 +109,7 @@ const EmailTemplateEditor: React.FC = () => {
     if (!currentTemplate) return { subject: '', body: '' };
 
     const sampleData = {
-      buildingName: building.info?.name || 'サンプルビル',
+      buildingName: building?.info?.name || 'サンプルビル',
       floorNumber: selectedFloor.toString(),
       area: '120',
       rent: '350,000',

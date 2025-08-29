@@ -5,7 +5,7 @@ import PendingApplications from '../components/PendingApplications';
 import ActivityHistory from '../components/ActivityHistory';
 import SummaryCard from '../../../components/Common/SummaryCard';
 import { TodaySummary } from '../components/Calendar/TodaySummary';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../store/hooks';
 import { selectPendingApplicationsCount } from '../../../store/selectors';
 import {
   transformViewingToEvent,
@@ -17,14 +17,26 @@ import {
 } from '../components/Calendar/utils/eventTransformers';
 
 const OwnerDashboard: React.FC = () => {
-  const pendingCount = useSelector(selectPendingApplicationsCount);
+  const pendingCount = useAppSelector(selectPendingApplicationsCount);
   
   // Reduxストアからカレンダーイベント用のデータを取得
-  const { reservations: viewingReservations } = useSelector((state: any) => state.viewingReservations);
-  const { applications: tenantApplications } = useSelector((state: any) => state.tenantApplications);
-  const { applications } = useSelector((state: any) => state.applications);
-  const { activities } = useSelector((state: any) => state.activities);
-  const { building } = useSelector((state: any) => state.building);
+  const { reservations: viewingReservations } = useAppSelector((state) => state.viewingReservations);
+  const { applications: tenantApplications } = useAppSelector((state) => state.tenantApplications);
+  const applicationsState = useAppSelector((state) => state.applications);
+  const activitiesState = useAppSelector((state) => state.activities);
+  const buildingState = useAppSelector((state) => state.building);
+
+  const applications = React.useMemo(
+    () => applicationsState.ids.map((id: string) => applicationsState.entities[id]).filter(Boolean),
+    [applicationsState]
+  );
+
+  const activities = React.useMemo(
+    () => activitiesState.ids.map((id: string) => activitiesState.entities[id]).filter(Boolean),
+    [activitiesState]
+  );
+
+  const building = buildingState.data;
 
   // 全てのイベントをカレンダーイベント形式に変換
   const allEvents = React.useMemo(() => {

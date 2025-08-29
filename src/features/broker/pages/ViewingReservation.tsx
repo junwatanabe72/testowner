@@ -47,12 +47,12 @@ interface ExtendedViewingReservationData {
   floorNumber: number;
   date: string;
   time: string;
-  clientName: string;
+  clientName?: string;
   clientEmail: string;
   clientPhone: string;
   companyName: string;
   purpose: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'approved' | 'completed' | 'cancelled';
   notes?: string;
   createdAt: string;
 }
@@ -280,7 +280,7 @@ const ViewingReservationPage: React.FC = () => {
               自社・今日の予約
             </Typography>
             <Typography variant="h4">
-              {combinedReservations.filter((r: ExtendedViewingReservationData) => r.date === new Date().toISOString().split('T')[0] && r.status !== 'cancelled').length}
+              {combinedReservations.filter((r) => r.date === new Date().toISOString().split('T')[0] && r.status !== 'cancelled').length}
             </Typography>
           </CardContent>
         </Card>
@@ -290,7 +290,7 @@ const ViewingReservationPage: React.FC = () => {
               自社・確認待ち
             </Typography>
             <Typography variant="h4" color="warning.main">
-              {combinedReservations.filter((r: ExtendedViewingReservationData) => r.status === 'pending').length}
+              {combinedReservations.filter((r) => r.status === 'pending').length}
             </Typography>
           </CardContent>
         </Card>
@@ -313,7 +313,7 @@ const ViewingReservationPage: React.FC = () => {
               自社・今月完了
             </Typography>
             <Typography variant="h4" color="success.main">
-              {combinedReservations.filter((r: ExtendedViewingReservationData) => r.status === 'completed').length}
+              {combinedReservations.filter((r) => r.status === 'completed').length}
             </Typography>
           </CardContent>
         </Card>
@@ -389,7 +389,7 @@ const ViewingReservationPage: React.FC = () => {
                   >
                     詳細
                   </Button>
-                  {reservation.status === 'pending' || reservation.status === 'confirmed' ? (
+                  {reservation.status === 'pending' || reservation.status === 'approved' ? (
                     <Button
                       size="small"
                       color="error"

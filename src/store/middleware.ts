@@ -1,6 +1,5 @@
 import { Middleware, AnyAction } from '@reduxjs/toolkit';
-
-const STORAGE_KEY = 'building-management-poc';
+import { STORAGE_KEY } from '../constants/storage';
 
 export const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
   const result = next(action);

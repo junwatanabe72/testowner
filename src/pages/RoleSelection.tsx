@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box, Button, Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../store/hooks';
 import { setUser } from '../store/slices/userSlice';
 import { Business, HomeWork } from '@mui/icons-material';
 
 const RoleSelection: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleRoleSelect = (role: 'owner' | 'broker') => {
     if (role === 'owner') {

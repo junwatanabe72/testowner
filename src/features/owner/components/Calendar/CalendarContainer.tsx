@@ -14,8 +14,7 @@ import {
   ChevronRight, 
   Today 
 } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../store';
+import { useAppSelector } from '../../../../store/hooks';
 import { CalendarEvent, CalendarView } from '../../../../types';
 import { MonthlyCalendar } from './MonthlyCalendar';
 import { TodaySummary } from './TodaySummary';
@@ -39,11 +38,23 @@ export const CalendarContainer: React.FC = () => {
   const [isEventDetailOpen, setIsEventDetailOpen] = useState(false);
 
   // Reduxストアからデータを取得
-  const { reservations: viewingReservations } = useSelector((state: RootState) => state.viewingReservations);
-  const { applications: tenantApplications } = useSelector((state: RootState) => state.tenantApplications);
-  const { applications } = useSelector((state: RootState) => state.applications);
-  const { activities } = useSelector((state: RootState) => state.activities);
-  const { building } = useSelector((state: RootState) => state.building);
+  const { reservations: viewingReservations } = useAppSelector((state) => state.viewingReservations);
+  const { applications: tenantApplications } = useAppSelector((state) => state.tenantApplications);
+  const applicationsState = useAppSelector((state) => state.applications);
+  const activitiesState = useAppSelector((state) => state.activities);
+  const buildingState = useAppSelector((state) => state.building);
+
+  const applications = useMemo(
+    () => applicationsState.ids.map((id: string) => applicationsState.entities[id]).filter(Boolean),
+    [applicationsState]
+  );
+
+  const activities = useMemo(
+    () => activitiesState.ids.map((id: string) => activitiesState.entities[id]).filter(Boolean),
+    [activitiesState]
+  );
+
+  const building = buildingState.data;
 
   // 全てのイベントをカレンダーイベント形式に変換
   const allEvents = useMemo(() => {

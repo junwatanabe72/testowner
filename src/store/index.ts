@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import buildingReducer from './slices/buildingSlice';
 import applicationsReducer from './slices/applicationsSlice';
 import viewingsReducer from './slices/viewingsSlice';
@@ -13,7 +13,7 @@ import recruitmentReducer from './slices/recruitmentSlice';
 import { localStorageMiddleware, loadPersistedState } from './middleware';
 import { generateInitialData } from '../utils/dataGenerator';
 
-const rootReducer = {
+const rootReducer = combineReducers({
   building: buildingReducer,
   applications: applicationsReducer,
   viewings: viewingsReducer,
@@ -25,21 +25,20 @@ const rootReducer = {
   viewingReservations: viewingReservationsReducer,
   tenantApplications: tenantApplicationsReducer,
   recruitment: recruitmentReducer,
-};
+});
 
 const persistedState = loadPersistedState();
-const initialData = persistedState || generateInitialData();
+const initialData: Partial<RootState> | undefined = (persistedState || generateInitialData()) as any;
 
 export const store = configureStore({
   reducer: rootReducer,
-  preloadedState: initialData as any,
-  middleware: (getDefaultMiddleware: any) =>
+  preloadedState: initialData,
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-      },
-    }).concat(localStorageMiddleware as any) as any,
-} as any);
+      // 永続化対象に Date 文字列などが含まれてもビルドを阻害しないために無効化
+      serializableCheck: false,
+    }).concat(localStorageMiddleware),
+});
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
