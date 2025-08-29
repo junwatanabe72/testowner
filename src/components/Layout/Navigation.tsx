@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Divider } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../store/hooks';
 import { selectUserRole } from '../../store/selectors';
 
 interface NavItem {
@@ -33,7 +33,7 @@ const brokerNavItems: NavItem[] = [
 const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userRole = useSelector(selectUserRole);
+  const userRole = useAppSelector(selectUserRole);
 
   const navItems = userRole === 'owner' ? ownerNavItems : brokerNavItems;
   const groups = Array.from(new Set(navItems.map(item => item.group).filter(Boolean)));

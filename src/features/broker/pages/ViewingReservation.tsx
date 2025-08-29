@@ -27,8 +27,7 @@ import {
   Badge,
   Tooltip,
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../../store';
+import { useAppSelector, useAppDispatch } from '../../../store/hooks';
 import { addActivity } from '../../../store/slices/activitiesSlice';
 import { showNotification } from '../../../store/slices/uiSlice';
 import { selectVacantFloors } from '../../../store/selectors';
@@ -58,9 +57,9 @@ interface ExtendedViewingReservationData {
 }
 
 const ViewingReservationPage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const vacantFloors = useSelector(selectVacantFloors);
-  const allViewingReservations = useSelector((state: RootState) => state.viewingReservations.reservations);
+  const dispatch = useAppDispatch();
+  const vacantFloors = useAppSelector(selectVacantFloors);
+  const allViewingReservations = useAppSelector((state) => state.viewingReservations.reservations);
   
   // 現在ログイン中の仲介会社（実際のアプリでは認証情報から取得）
   const currentBrokerCompany = 'エステート不動産';

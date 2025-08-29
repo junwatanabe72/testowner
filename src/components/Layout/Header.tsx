@@ -1,11 +1,11 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Avatar, Badge } from '@mui/material';
 import { Notifications as NotificationsIcon } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../store/hooks';
 import { selectCurrentUser } from '../../store/selectors';
 
 const Header: React.FC = () => {
-  const user = useSelector(selectCurrentUser);
+  const user = useAppSelector(selectCurrentUser);
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
